@@ -5,11 +5,11 @@
 #include "../model/Vehiculo.h"
 
 class NodoVehiculo {
-private:
-    // 1. Puntero al dato (El Vehiculo almacenado)
+
+    // Valor del nodo
     Vehiculo* dato;
 
-    // 2. Puntero al siguiente nodo (La dirección de memoria del próximo NodoVehiculo)
+    // Puntero al siguiente nodo
     NodoVehiculo* siguiente;
 
 public:
@@ -17,8 +17,8 @@ public:
     NodoVehiculo(Vehiculo* v);
 
     // Getters
-    Vehiculo* getDato() const;
-    NodoVehiculo* getSiguiente() const;
+    Vehiculo* getDato();
+    NodoVehiculo* getSiguiente();
 
     // Setter
     void setSiguiente(NodoVehiculo* nuevoSiguiente);

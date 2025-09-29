@@ -12,7 +12,8 @@ add_executable(Taller_1 main.cpp
         model/Vehiculo.h
         managers/NodoVehiculo.cpp
         managers/NodoVehiculo.h
-        managers/ManejadorUsuarios.cpp
-        managers/ManejadorUsuarios.h
-        managers/ManejadorVehiculos.cpp
-        managers/ManejadorVehiculos.h)
+        managers/ListaUsuarios.cpp
+        managers/ListaUsuarios.h
+        managers/ListaVehiculos.cpp
+        managers/ListaVehiculos.h
+)

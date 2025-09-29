@@ -5,7 +5,6 @@
 #include <string>
 
 class Usuario {
-private:
     int id;
     std::string nombre;
     float reputacion;
@@ -18,11 +17,12 @@ public:
     Usuario(int id, std::string nombre, float reputacion, std::string correo, std::string clave, int edad);
 
     // Getters
-    int getId() const;
-    std::string getNombre() const;
-    float getReputacion() const;
-    std::string getCorreo() const;
-    int getEdad() const;
+    int getId();
+    std::string getNombre();
+    float getReputacion();
+    std::string getCorreo();
+    std::string getClave();
+    int getEdad();
 
     // (Incluir documentación aquí)
 };

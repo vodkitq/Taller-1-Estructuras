@@ -3,14 +3,14 @@
 #include <fstream>
 #include <sstream>
 
-Sistema::Sistema() : usuarioActual(nullptr) {
-    // 1. Inicializar las clases gestoras (las estructuras de datos)
-    gestorUsuarios = new ManejadorUsuarios();
-    gestorVehiculos = new ManejadorVehiculos();
+Sistema::Sistema() {
+    usuarioActual = nullptr;
+
+    gestorUsuarios = new ListaUsuarios();
+    gestorVehiculos = new ListaVehiculos();
 
     std::cout << "Inicializando sistema..." << std::endl;
 
-    // 2. Cargar los datos iniciales
     leerVehiculos("vehiculos.csv");
     leerUsuarios("usuarios.csv");
 }
@@ -20,17 +20,15 @@ Sistema::~Sistema() {
     salir();
 }
 
-void Sistema::leerUsuarios(const std::string& archivo) {
+void Sistema::leerUsuarios(std::string archivo) {
     // Paso Uno: Abrir el archivo
     std::ifstream archivoEntrada(archivo);
     if (!archivoEntrada.is_open()) {
         std::cerr << "Error: No se pudo abrir el archivo de usuarios." << std::endl;
-        return;
+        exit(1);
     }
 
     std::string linea;
-    // Opcional: Omitir la cabecera si la tiene.
-    // std::getline(archivoEntrada, linea);
 
     while (std::getline(archivoEntrada, linea)) {
         // Crear un stringstream que necesita la línea leída del archivo
@@ -51,17 +49,15 @@ void Sistema::leerUsuarios(const std::string& archivo) {
             float reputacion = std::stof(reputacion_str);
             int edad = std::stoi(edad_str);
 
-            // Crear el objeto Usuario dinámicamente con new
+            // Se crea un objeto de la clase Usuario
             Usuario* nuevoUsuario = new Usuario(id, nombre, reputacion, correo, clave, edad);
 
-            // Insertar en la estructura obligatoria (Arreglo Dinámico Ordenado)
-            // ESTO REEMPLAZA EL PROHIBIDO 'emplace_back' [2-4]
+            // Se inserta en el arreglo dinamico ordenado
             if (gestorUsuarios != nullptr) {
                 gestorUsuarios->insertarUsuario(nuevoUsuario);
             }
 
-        } catch (const std::exception& e) {
-            // Manejo de errores de conversión de datos (usando try-catch [10])
+        } catch (std::exception& e) {
             std::cerr << "Error al procesar línea de usuario: " << e.what() << std::endl;
         }
     }
@@ -69,11 +65,11 @@ void Sistema::leerUsuarios(const std::string& archivo) {
     std::cout << "Usuarios cargados correctamente." << std::endl;
 }
 
-void Sistema::leerVehiculos(const std::string& archivo) {
+void Sistema::leerVehiculos(std::string archivo) {
     std::ifstream archivoEntrada(archivo);
     if (!archivoEntrada.is_open()) {
         std::cerr << "Error: No se pudo abrir el archivo de vehículos." << std::endl;
-        return;
+        exit(1);
     }
 
     std::string linea;
@@ -94,15 +90,16 @@ void Sistema::leerVehiculos(const std::string& archivo) {
             // Conversión de datos
             int idUsuario = std::stoi(idUsuario_str);
             int monto = std::stoi(monto_str);
-            // Conversión simple de "true"/"false" a bool
+
+            // Conversión simple de true/false a bool
             bool papelesAlDia = (papelesAlDia_str == "true");
             bool fallaTecnica = (fallaTecnica_str == "true");
 
-            // Crea el objeto Vehiculo dinámicamente con new
+            // Se crea un objeto de la clase Vehiculo
             Vehiculo* nuevoVehiculo = new Vehiculo(patente, idUsuario, modelo, monto,
                                                    papelesAlDia, fallaTecnica, mensaje);
 
-            // Inserta en la estructura obligatoria (Lista Enlazada Circular)
+            // Se inserta en el arreglo dinamico circular
             if (gestorVehiculos != nullptr) {
                 gestorVehiculos->insertarVehiculo(nuevoVehiculo);
             }
@@ -120,8 +117,8 @@ void Sistema::menuInicial() {
     while (opcion != 3) {
         // Mostrar Menú Inicial
         std::cout << "\n--- MENÚ INICIAL ---" << std::endl;
-        std::cout << "1. Iniciar sesión" << std::endl; // [18]
-        std::cout << "2. Registrarse" << std::endl;   // [19]
+        std::cout << "1. Iniciar sesión" << std::endl;
+        std::cout << "2. Registrarse" << std::endl;
         std::cout << "3. Salir" << std::endl;
         std::cout << "Seleccione una opción: ";
 
@@ -136,13 +133,15 @@ void Sistema::menuInicial() {
             case 1:
                 // Lógica de Iniciar Sesión
                 // Si la autenticación es exitosa, llamar a menuPrincipal()
+                inicioSesion();
+
                 break;
             case 2:
                 // Lógica de Registrarse
                 // Generar Id aleatorio único y reputación por defecto (0.5)
                 break;
             case 3:
-                salir(); // Opción G
+                salir();
                 return;
             default:
                 std::cout << "Opción inválida." << std::endl;
@@ -223,17 +222,111 @@ void Sistema::menuPrincipal() {
     } while (opcion != 'G');
 }
 
-void mostrarTodos();
+void Sistema::inicioSesion() {
+    while (true) {
+        std::cout << "======== INICIO DE SESION ==========" << std::endl;
 
-void buscarUsuarios(int id) {}
+        std::string correo;
+        std::cout << "Ingrese su correo (0 para salir): ";
+        std::cin >> correo;
 
-void publicarVehiculo() {}
+        std::string contrasenia;
+        std::cout << "Ingrese su contrasenia: ";
+        std::cin >> contrasenia;
 
-void visualizarOfertas() {}
+        if (correo == "0") {
+            return;
+        }
 
-void eliminarUsuario() {}
+        for (int i = 0; i < gestorUsuarios->getCantidadActual(); i++) {
+            if (gestorUsuarios->getUsuario(i)->getCorreo() == correo && gestorUsuarios->getUsuario(i)->getClave() == contrasenia) {
+                usuarioActual = gestorUsuarios->getUsuario(i);
+                std::cout << "Ha iniciado sesión correctamente." << std::endl;
+                std::cout << "Bienvenido " << gestorUsuarios->getUsuario(i)->getNombre() << std::endl;
+                menuPrincipal();
+                return;
+            }
+        }
 
-void generarReporte() {}
+        std::cout << "Credenciales incorrectas";
+    }
+}
+
+void Sistema::registroUsuario() {
+    using namespace std;
+    while (true) {
+        cout << "======== REGISTRO DE USUARIO ==========" << endl;
+
+        string nombre;
+        string nombreAux;
+        cout << "Ingrese su nombre y apellido (0 para salir): ";
+        cin >> nombreAux; // Validar que el nombre y el apellido esté separado por un espacio
+
+        if (nombreAux == "0") {
+            return;
+        }
+
+        for (int i = 0; i < nombreAux.length(); i++) {
+            // Si existe un espacio dentro del string que esté entre medio y no al inicio o al final
+            if (nombreAux[i] == ' ' && i > 0 && i < nombreAux.length()) {
+                nombre = nombreAux;
+                break; // Se sale del ciclo for
+
+            }
+        }
+
+        if (nombre.empty()) { // Si la variable 'nombre' está vacía
+            cout << "El nombre y el apellido deben estar separados por un espacio." << endl;
+            continue;
+        }
+
+        string correo;
+        cout << "Ingrese su correo: ";
+        cin >> correo; // Validar que el formato del texto corresponda a un correo electronico
+
+        int edad;
+        cout << "Ingrese su edad: ";
+        cin >> edad;
+
+        if (edad < 0 || edad > 75) {
+            cout << "La edad debe ser mayor a 0 y menor a 75." << endl;
+            continue;
+        }
+
+        string clave;
+        cout << "Ingrese su clave: ";
+        cin >> clave;
+
+        string claveRepetida;
+        cout << "Confirme su clave: ";
+        cin >> claveRepetida;
+
+        if (clave != claveRepetida) {
+            cout << "La clave ingresada no coincide con la ingresada anteriormente." << endl;
+        }
+
+        int id; // Hay que hacer aleatoria esta variable (entre 100 y 999 y que no existe desde antes)
+
+        float reputacion = 0.50; // Reputacion default al crear un usuario
+
+        Usuario* usuario = new Usuario(id, nombre, reputacion, correo, clave, edad);
+
+        gestorUsuarios->insertarUsuario(usuario);
+        usuarioActual = usuario;
+    }
+}
+
+void Sistema::mostrarTodos() {}
+
+void Sistema::buscarUsuario(int id) {}
+
+void Sistema::publicarVehiculo() {}
+
+void Sistema::visualizarOfertas() {}
+
+void Sistema::eliminarUsuario() {}
+
+void Sistema::generarReporte() {}
 
 void Sistema::salir() {
     // Opción G: Borrar todos los punteros asociados a las estructuras.

@@ -5,21 +5,21 @@
 #include "../model/Usuario.h" // Se debe incluir el modelo
 #include <cstdlib> // Necesario para 'realloc' y 'free'
 
-class ManejadorUsuarios {
-private:
+class ListaUsuarios {
+
     // Puntero doble: El arreglo dinámico que almacena punteros a objetos Usuario
     Usuario** arregloUsuarios;
     int capacidad;              // Capacidad máxima actual del arreglo
-    int contador;               // Número actual de usuarios insertados
-    int redimensiones;          // Contador de veces que se usó realloc (Opción F) [4]
+    int cantidadActual;               // Número actual de usuarios insertados
+    int redimensiones;          // Contador de veces que se usó realloc
 
-    // Método auxiliar para el crecimiento manual del arreglo
+    // Metodo auxiliar para el crecimiento manual del arreglo
     void redimensionarArreglo();
 
 public:
     // Constructor y Destructor (para liberar memoria - Opción G)
-    ManejadorUsuarios();
-    ~ManejadorUsuarios();
+    ListaUsuarios();
+    ~ListaUsuarios();
 
     // Inserción: Debe mantener el orden por Id
     void insertarUsuario(Usuario* nuevoUsuario);
@@ -31,7 +31,7 @@ public:
     int getRedimensiones() const;
 
     // Métodos auxiliares necesarios
-    int getContador() const;
+    int getCantidadActual() const;
     Usuario* getUsuario(int indice) const;
 };
 

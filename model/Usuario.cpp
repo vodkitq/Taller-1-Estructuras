@@ -6,23 +6,27 @@ Usuario::Usuario(int id, std::string nombre, float reputacion, std::string corre
     : id(id), nombre(nombre), reputacion(reputacion), correo(correo), clave(clave), edad(edad) {
 }
 
-int Usuario::getId() const {
+int Usuario::getId() {
     return id;
 }
 
-std::string Usuario::getNombre() const {
+std::string Usuario::getNombre() {
     return nombre;
 }
 
-float Usuario::getReputacion() const {
+float Usuario::getReputacion() {
     return reputacion;
 }
 
-std::string Usuario::getCorreo() const {
+std::string Usuario::getCorreo() {
     return correo;
 }
 
-int Usuario::getEdad() const {
+std::string Usuario::getClave() {
+    return clave;
+}
+
+int Usuario::getEdad() {
     return edad;
 }
 

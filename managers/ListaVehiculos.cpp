@@ -1,13 +1,14 @@
 
-#include "ManejadorVehiculos.h"
+#include "ListaVehiculos.h"
 #include <iostream>
 
-ManejadorVehiculos::ManejadorVehiculos() : cabeza(nullptr), cola(nullptr) {
-    // Los punteros de control se inicializan a nulo cuando la lista está vacía.
+ListaVehiculos::ListaVehiculos() {
+    cabeza = nullptr;
+    cola = nullptr;
 }
 
-ManejadorVehiculos::~ManejadorVehiculos() {
-    // Implementación para liberar toda la memoria de la lista circular (Opción G)
+ListaVehiculos::~ListaVehiculos() {
+
     if (cabeza == nullptr) {
         return; // Lista vacía
     }
@@ -28,7 +29,7 @@ ManejadorVehiculos::~ManejadorVehiculos() {
     cola = nullptr;
 }
 
-void ManejadorVehiculos::insertarVehiculo(Vehiculo* nuevoVehiculo) {
+void ListaVehiculos::insertarVehiculo(Vehiculo* nuevoVehiculo) {
     NodoVehiculo* nuevoNodo = new NodoVehiculo(nuevoVehiculo);
 
     if (cabeza == nullptr) {

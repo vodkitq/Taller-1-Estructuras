@@ -5,7 +5,7 @@
 #include "NodoVehiculo.h"
 #include <string>
 
-class ManejadorVehiculos {
+class ListaVehiculos {
 private:
     // Punteros de control para la Lista Enlazada Circular [2]
     NodoVehiculo* cabeza; // Puntero al primer nodo
@@ -13,7 +13,7 @@ private:
 
 public:
     // Constructor
-    ManejadorVehiculos();
+    ListaVehiculos();
 
     // Inserción: Lógica para agregar un nuevo vehículo y mantener la circularidad
     void insertarVehiculo(Vehiculo* nuevoVehiculo);
@@ -25,7 +25,7 @@ public:
     NodoVehiculo* buscarPorPatente(const std::string& patente);
 
     // Destructor
-    ~ManejadorVehiculos();
+    ~ListaVehiculos();
 };
 
 #endif //TALLER_1_MANEJADORVEHICULOS_H
