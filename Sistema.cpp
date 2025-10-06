@@ -3,7 +3,6 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
 #include <cctype>
 #include <cstdlib>
 #include <ctime>
@@ -511,7 +510,7 @@ void Sistema::publicarVehiculo() {
     using namespace std;
 
     if (usuarioActual == nullptr) {
-        cout << ("Error: Debe iniciar sesión para publicar un vehiculo.") << endl;
+        cout << "Error: Debe iniciar sesión para publicar un vehiculo." << endl;
         return;
     }
 
@@ -521,9 +520,10 @@ void Sistema::publicarVehiculo() {
     int monto = -1;
     bool papelesAlDia, fallaTecnica;
 
-    // Bucle de validacion
+    // Bucle de validación
     while (true) {
-        vector<string> errores;
+        string errores[15]; // máximo 15 errores
+        int numErrores = 0;
 
         cout << "\n======== PUBLICAR VEHICULO =========" << endl;
         cout << "(Ingrese '0' en cualquier campo para cancelar)" << endl;
@@ -532,109 +532,83 @@ void Sistema::publicarVehiculo() {
 
         // Patente
         cout << "a. Patente (4 no-vocales, 2 digitos, Ej: AABB12): ";
-        std::getline(std::cin, patente);
+        getline(cin, patente);
         if (patente == "0") return;
 
-        // Validacion de patente
         if (!validarPatente(patente)) {
-            errores.push_back("Patente: Debe tener 4 letras (no vocales) y 2 dígitos (el primero no es 0). ");
+            errores[numErrores++] = "Patente: Debe tener 4 letras (no vocales) y 2 dígitos (el primero no es 0).";
         }
 
         // Modelo
         cout << "b. Modelo (Marca, modelo y anio entre parentesis): ";
-        std::getline(std::cin, modelo);
+        getline(cin, modelo);
         if (modelo == "0") return;
-
-        // Validación básica de modelo
         if (modelo.empty()) {
-            errores.push_back("Modelo: No puede estar vacio.");
+            errores[numErrores++] = "Modelo: No puede estar vacío.";
         }
 
-        // Papeles al dia
+        // Papeles al día
         cout << "c. Papeles al dia (si/no): ";
         cin >> papelesStr;
-        std::transform(papelesStr.begin(), papelesStr.end(), papelesStr.begin(), ::tolower); // Convertir a minúsculas
+        for (char &c : papelesStr) c = tolower(c);
 
-        if (papelesStr == "si") {
-            papelesAlDia = true;
-        } else if (papelesStr == "no") {
-            papelesAlDia = false;
-        } else if (papelesStr == "0") {
-            return;
-        } else {
-            errores.push_back("Papeles al dia: Debe ser 'si' o 'no'.");
-        }
+        if (papelesStr == "si") papelesAlDia = true;
+        else if (papelesStr == "no") papelesAlDia = false;
+        else if (papelesStr == "0") return;
+        else errores[numErrores++] = "Papeles al dia: Debe ser 'si' o 'no'.";
 
         // Monto
         cout << "d. Monto (Precio, máx. 1,000,000): $";
-
         if (!(cin >> monto) || monto < 0) {
-            errores.push_back("Monto: Debe ser un numero entero positivo.");
+            errores[numErrores++] = "Monto: Debe ser un número entero positivo.";
             cin.clear();
             cin.ignore(10000, '\n');
-        } else if (monto > 1000000) { // No debe superar el millón de pesos chilenos [1]
-            errores.push_back("Monto: No debe superar el limite de $1,000,000.");
+        } else if (monto > 1000000) {
+            errores[numErrores++] = "Monto: No debe superar $1,000,000.";
         }
 
-        // Falla tecnica
-        cout << "e. Tiene falla tecnica (si/no): ";
+        // Falla técnica
+        cout << "e. Tiene falla técnica (si/no): ";
         cin >> fallaStr;
-        std::transform(fallaStr.begin(), fallaStr.end(), fallaStr.begin(), ::tolower);
+        for (char &c : fallaStr) c = tolower(c);
 
-        if (fallaStr == "si") {
-            fallaTecnica = true;
-        } else if (fallaStr == "no") {
-            fallaTecnica = false;
-        } else if (fallaStr == "0") {
-            return;
-        } else {
-            errores.push_back("Falla tecnica: Debe ser 'si' o 'no'.");
-        }
+        if (fallaStr == "si") fallaTecnica = true;
+        else if (fallaStr == "no") fallaTecnica = false;
+        else if (fallaStr == "0") return;
+        else errores[numErrores++] = "Falla técnica: Debe ser 'si' o 'no'.";
 
         // Mensaje
         cout << "f. Mensaje (Max. 450 caracteres, sin comas/saltos): ";
-        cin.ignore(10000, '\n'); // Limpiar buffer después del último cin >>
-        std::getline(std::cin, mensaje);
+        cin.ignore(10000, '\n');
+        getline(cin, mensaje);
         if (mensaje == "0") return;
 
-        // Validación de mensaje [4]
-        if (mensaje.length() > 450) {
-            errores.push_back("Mensaje: El texto no debe superar los 450 caracteres.");
-        }
-        if (mensaje.find(',') != string::npos) { // No debe contener comas [4]
-            errores.push_back("Mensaje: El texto no debe contener comas.");
-        }
+        if (mensaje.length() > 450)
+            errores[numErrores++] = "Mensaje: No debe superar los 450 caracteres.";
+        if (mensaje.find(',') != string::npos)
+            errores[numErrores++] = "Mensaje: No debe contener comas.";
 
-        // Resultado de la validacion
-        if (errores.empty()) {
-            // Todos los datos son válidos
-
-            // Creamos el nuevo Vehiculo (usando el ID del usuario logueado)
+        // Resultado de validación
+        if (numErrores == 0) {
             Vehiculo* nuevoVehiculo = new Vehiculo(
                 patente,
-                usuarioActual->getId(), // Obtenemos el ID del usuario autenticado
+                usuarioActual->getId(),
                 modelo,
                 monto,
                 papelesAlDia,
                 fallaTecnica,
                 mensaje
             );
-            // Insertamos en la Lista Enlazada Circular
             gestorVehiculos->insertarVehiculo(nuevoVehiculo);
-
-            cout << ("\nVehiculo publicado exitosamente.") << endl;
-            break; // Salir del bucle while(true)
+            cout << "\nVehiculo publicado exitosamente." << endl;
+            break;
         } else {
-            // Mostrar todos los errores
-            cout << ("\n=============================================") << endl;
-            cout << ("ERROR: Se encontraron los siguientes problemas:") << endl;
-
-            for (const string& error : errores) {
-                cout << ("* ") << error << endl;
-            }
-
-            cout << ("Por favor, intentelo de nuevo.") << endl;
-            cout << ("=============================================\n") << endl;
+            cout << "\n=============================================" << endl;
+            cout << "ERROR: Se encontraron los siguientes problemas:" << endl;
+            for (int i = 0; i < numErrores; i++)
+                cout << "* " << errores[i] << endl;
+            cout << "Por favor, intentelo de nuevo." << endl;
+            cout << "=============================================\n" << endl;
         }
     }
 }
